@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Checkout – prodbyosin</title>
+
+  <!-- FONT -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --bg:#050607;
+      --panel:#0a0c10;
+      --text:#e6eaf0;
+      --muted:rgba(230,234,240,.55);
+      --line:rgba(255,255,255,.08);
+      --accent:rgba(120,180,255,.8);
+    }
+
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:Inter,system-ui,sans-serif;
+      background:radial-gradient(1200px 600px at 50% 20%,rgba(120,180,255,.06),transparent 70%),var(--bg);
+      color:var(--text);
+      min-height:100vh;
+    }
+
+    a{color:inherit;text-decoration:none}
+
+    header{
+      padding:16px 20px;
+    }
+
+    .back{
+      font-size:12px;
+      opacity:.6;
+    }
+
+    main{
+      max-width:460px;
+      margin:0 auto;
+      padding:20px;
+    }
+
+    h1{
+      margin:8px 0 20px;
+      font-size:28px;
+      letter-spacing:-.04em;
+    }
+
+    .summary{
+      border:1px solid var(--line);
+      padding:14px;
+      margin-bottom:20px;
+    }
+
+    .summary strong{
+      display:block;
+      font-size:14px;
+      margin-bottom:4px;
+    }
+
+    .summary span{
+      font-size:12px;
+      color:var(--muted);
+    }
+
+    .summary .price{
+      margin-top:8px;
+      font-family:JetBrains Mono,monospace;
+      font-size:16px;
+    }
+
+    .payments{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:10px;
+      margin-bottom:20px;
+    }
+
+.pay-option {
+  border: 1px solid var(--line);
+  padding: 8px 0;              /* ↓ klucz */
+  text-align: center;
+  font-size: 11px;
+  line-height: 1;
+  cursor: pointer;
+  transition: border .25s ease, color .25s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+
+    .pay-option:hover{
+      border-color:rgba(120,180,255,.4);
+    }
+
+    .pay-option.active{
+      border-color:var(--accent);
+      color:#fff;
+    }
+
+    .cta{
+      display:block;
+      width:100%;
+      padding:14px 0;
+      border:1px solid var(--accent);
+      text-align:center;
+      font-size:12px;
+      letter-spacing:.14em;
+      text-transform:uppercase;
+      background:transparent;
+      color:var(--text);
+      cursor:pointer;
+    }
+
+    .cta:disabled{
+      opacity:.4;
+      cursor:not-allowed;
+      border-color: rgba(255,255,255,.2);
+    }
+
+    .hint{
+      margin-top:12px;
+      font-size:11px;
+      color:var(--muted);
+      text-align:center;
+    }
+
+    .email-field {
+  margin-bottom: 18px;
+}
+
+.email-field label {
+  display: block;
+  font-size: 11px;
+  color: var(--muted);
+  margin-bottom: 6px;
+}
+
+.email-field input {
+  width: 100%;
+  background: transparent;
+  border: 1px solid var(--line);
+  padding: 12px;
+  color: var(--text);
+  font-size: 13px;
+}
+
+.email-field input::placeholder {
+  color: rgba(255,255,255,.35);
+}
+
+.email-field input:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+    /* MOBILE */
+    @media(max-width:640px){
+      main{padding:16px}
+      h1{font-size:24px}
+    }
+  </style>
+</head>
+
+<body>
+
+<header>
+  <a href="license.html" class="back">← Back to license</a>
+</header>
+
+<main>
+  <h1>Checkout</h1>
+
+  <div class="summary">
+    <strong>Night Drive</strong>
+    <span>WAV + STEMS</span>
+    <div class="price">250 zł</div>
+  </div>
+
+  <div class="email-field">
+  <label>Email for delivery</label>
+  <input id="email" type="email" placeholder="you@email.com" required>
+</div>
+
+
+<div class="pay-option">
+  <img src="assets/icons/blik.png" alt="BLIK">
+</div>
+
+<div class="pay-option">
+  <img src="assets/icons/applepay.png" alt="Apple Pay">
+</div>
+
+<div class="pay-option">
+  <img src="assets/icons/Google_Pay.jpg" alt="Google Pay">
+</div>
+
+<div class="pay-option">
+  <img src="assets/icons/card.png" alt="Card">
+</div>
+
+
+<button id="payBtn" class="cta" disabled>Pay now</button>
+  <div class="hint">Files delivered instantly after payment</div>
+</main>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+
+  const emailInput = document.getElementById('email');
+  const payBtn = document.getElementById('payBtn');
+  const paymentOptions = document.querySelectorAll('.pay-option');
+
+  console.log(emailInput, payBtn, paymentOptions);
+
+  let paymentSelected = false;
+
+  function validate() {
+    const emailValid =
+      emailInput.value.trim().length > 3 &&
+      emailInput.value.includes('@');
+
+    payBtn.disabled = !(emailValid && paymentSelected);
+  }
+
+  // email validation
+  emailInput.addEventListener('input', validate);
+
+  // payment selection
+  paymentOptions.forEach(option => {
+    option.addEventListener('click', () => {
+      paymentOptions.forEach(o => o.classList.remove('active'));
+      option.classList.add('active');
+      paymentSelected = true;
+      validate();
+    });
+  });
+
+  // FAKE PROCESSING FLOW
+  payBtn.addEventListener('click', () => {
+    // blokada UI
+    window.onbeforeunload = () => true;
+    payBtn.disabled = true;
+    emailInput.disabled = true;
+    paymentOptions.forEach(o => o.style.pointerEvents = 'none');
+
+    // krok 1
+    payBtn.innerText = 'Processing payment…';
+
+    // krok 2
+    setTimeout(() => {
+      payBtn.innerText = 'Preparing files…';
+    }, 700);
+
+    // sukces
+    setTimeout(() => {
+      window.location.href = 'success.html';
+    }, 1600);
+  });
+
+});
+</script>
+
+
+</body>
+</html>
